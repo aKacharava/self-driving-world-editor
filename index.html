@@ -9,30 +9,69 @@
   <body>
     <h1>world editor</h1>
     <canvas id="myCanvas"></canvas>
+    <div id="controls">
+      <button onclick="addRandomPoint()">Add Point</button>
+      <button onclick="addRandomSegment()">Add Segment</button>
+      <button onclick="removeSegment()">Remove Segment</button>
+    </div>
 
     <script src="js/math/graph.js"></script>
     <script src="js/primitives/point.js"></script>
     <script src="js/primitives/segment.js"></script>
     <script>
+      function removeSegment() {
+        if (graph.segments.length === 0) {
+          console.log("no segments");
+          return;
+        }
+
+        const index = Math.floor(Math.random() * graph.segments.length);
+        graph.removeSegment(graph.segments[index]);
+        redrawCanvas();
+      }
+
+      function addRandomSegment() {
+        const index1 = Math.floor(Math.random() * graph.points.length);
+        const index2 = Math.floor(Math.random() * graph.points.length);
+
+        const result = graph.tryAddSegment(
+          new Segment(graph.points[index1], graph.points[index2])
+        );
+        redrawCanvas();
+
+        console.log("added segment: ", result);
+      }
+
+      function addRandomPoint() {
+        const result = graph.tryAddPoint(
+          new Point(
+            Math.random() * myCanvas.width,
+            Math.random() * myCanvas.height
+          )
+        );
+        redrawCanvas();
+
+        console.log("added point", result);
+      }
+
+      function redrawCanvas() {
+        ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+        graph.draw(ctx);
+      }
+
       myCanvas.width = 1200;
       myCanvas.height = 600;
 
       const ctx = myCanvas.getContext("2d");
 
-      const p1 = new Point(200, 200);
-      const p2 = new Point(500, 200);
-      const p3 = new Point(400, 400);
-      const p4 = new Point(100, 300);
+      const point1 = new Point(200, 200);
+      const point2 = new Point(500, 200);
+      const point3 = new Point(400, 400);
+      const point4 = new Point(100, 300);
 
-      const segment1 = new Segment(p1, p2);
-      const segment2 = new Segment(p1, p3);
-      const segment3 = new Segment(p1, p4);
-      const segment4 = new Segment(p2, p3);
+      const points = [point1, point2, point3, point4];
 
-      const points = [p1, p2, p3, p4];
-      const segments = [segment1, segment2, segment3, segment4];
-
-      const graph = new Graph(points, segments);
+      const graph = new Graph(points);
       graph.draw(ctx);
     </script>
   </body>
